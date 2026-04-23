@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoromy Trading — Invoice Generator</title>
+  <meta name="description" content="Generate professional PDF invoices for Zoromy Trading. Offline-ready, no backend required." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-canvas">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-badge">ZT</div>
+        <div class="header-text">
+          <h1>Invoice Generator</h1>
+          <p>Zoromy Trading &middot; Doha, Qatar</p>
+        </div>
+      </div>
+      <span id="invoiceCounter" class="invoice-counter"></span>
+    </header>
+
+    <form id="invoiceForm" novalidate>
+
+      <!-- SECTION: Invoice Details -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-icon">📋</span>
+          <h2>Invoice Details</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-row two-col">
+            <div class="field-group">
+              <label for="invoiceNumber">Invoice Number</label>
+              <input type="text" id="invoiceNumber" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="field-group">
+              <label for="invoiceDate">Invoice Date</label>
+              <input type="date" id="invoiceDate" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Payment Status</label>
+            <div class="status-toggle">
+              <button type="button" id="btnUnpaid" class="status-btn unpaid active">UNPAID</button>
+              <button type="button" id="btnPaid"   class="status-btn paid">PAID</button>
+            </div>
+            <input type="hidden" id="paymentStatus" value="UNPAID" />
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Client Details -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-icon">👤</span>
+          <h2>Client Details</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label for="clientSelect">Client</label>
+            <div class="select-wrapper">
+              <select id="clientSelect">
+                <option value="">— Select a client —</option>
+                <option value="__new__">＋ Add New Client</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+
+          <!-- New client form -->
+          <div id="newClientPanel" class="sub-panel hidden">
+            <div class="sub-panel-label">New Client Information</div>
+            <div class="field-row two-col">
+              <div class="field-group">
+                <label for="newClientName">Company / Client Name</label>
+                <input type="text" id="newClientName" placeholder="e.g. Kate Facility Management" />
+              </div>
+              <div class="field-group">
+                <label for="newClientPhone">Phone Number</label>
+                <input type="tel" id="newClientPhone" placeholder="+974 XXXX XXXX" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="newClientCity">City / Address</label>
+              <input type="text" id="newClientCity" placeholder="Doha, Qatar" />
+            </div>
+            <button type="button" id="saveClientBtn" class="btn-secondary">Save &amp; Select Client</button>
+          </div>
+
+          <!-- Existing client info (editable) -->
+          <div id="clientInfoPanel" class="sub-panel hidden">
+            <div class="sub-panel-label">Client Information</div>
+            <div class="field-row two-col">
+              <div class="field-group">
+                <label for="clientName">Client Name</label>
+                <input type="text" id="clientName" />
+              </div>
+              <div class="field-group">
+                <label for="clientPhone">Phone</label>
+                <input type="text" id="clientPhone" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="clientCity">City / Address</label>
+              <input type="text" id="clientCity" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Service Details -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-icon">🏠</span>
+          <h2>Service Details</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" placeholder="e.g. Rent for staff Accom., Ain Khalid" />
+          </div>
+          <div class="field-row two-col">
+            <div class="field-group">
+              <label for="periodStart">Start Date</label>
+              <input type="date" id="periodStart" />
+            </div>
+            <div class="field-group">
+              <label for="numMonths">Number of Months</label>
+              <input type="number" id="numMonths" placeholder="e.g. 3" min="1" step="1" />
+            </div>
+          </div>
+          <div class="field-row two-col">
+            <div class="field-group">
+              <label for="monthlyAmount">Monthly Amount</label>
+              <div class="amount-wrapper">
+                <span class="currency-badge">QAR</span>
+                <input type="number" id="monthlyAmount" placeholder="0.00" min="0" step="0.01" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Total Amount (auto-calculated)</label>
+              <div class="amount-wrapper computed">
+                <span class="currency-badge">QAR</span>
+                <input type="text" id="totalAmountDisplay" placeholder="—" readonly tabindex="-1" />
+              </div>
+              <span id="periodPreview" class="period-preview"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Generate Button -->
+      <div class="form-actions">
+        <button type="submit" id="generateBtn" class="btn-generate">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+          Generate Invoice PDF
+        </button>
+      </div>
+
+    </form>
+
+    <footer class="app-footer">
+      <p>Invoices are generated locally in your browser. No data is sent to any server.</p>
+    </footer>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
